@@ -5,7 +5,6 @@ Contains class BaseModel
 
 from datetime import datetime
 import models
-import inspect
 from os import getenv
 import sqlalchemy
 from sqlalchemy import Column, String, DateTime
@@ -59,25 +58,20 @@ class BaseModel:
         models.storage.new(self)
         models.storage.save()
 
-    def to_dict(self):
+    def to_dict(self, save_fs=None):
         """returns a dictionary containing all keys/values of the instance"""
-        dict_obj = self.__dict__.copy()
-        if "created_at" in dict_obj:
-            dict_obj["created_at"] = dict_obj["created_at"].strftime(time)
-        if "updated_at" in dict_obj:
-            dict_obj["updated_at"] = dict_obj["updated_at"].strftime(time)
-        dict_obj["__class__"] = self.__class__.__name__
-        if "_sa_instance_state" in dict_obj:
-            del dict_obj["_sa_instance_state"]
-        frame = inspect.currentframe().f_back
-        func_frame = frame.f_code.co_name
-        class_name = ''
-        if 'self' in frame.f_locals:
-            class_name = frame.f_locals["self"].__class__.__name__
-        is_fs_writing = func_frame == 'save' and class_name == 'FileStorage'
-        if 'password' in dict_obj and not is_fs_writing:
-            del dict_obj['password']
-        return dict_obj
+        new_dict = self.__dict__.copy()
+        if "created_at" in new_dict:
+            new_dict["created_at"] = new_dict["created_at"].strftime(time)
+        if "updated_at" in new_dict:
+            new_dict["updated_at"] = new_dict["updated_at"].strftime(time)
+        new_dict["__class__"] = self.__class__.__name__
+        if "_sa_instance_state" in new_dict:
+            del new_dict["_sa_instance_state"]
+        if save_fs is None:
+            if "password" in new_dict:
+                del new_dict["password"]
+        return new_dict
 
     def delete(self):
         """delete the current instance from the storage"""

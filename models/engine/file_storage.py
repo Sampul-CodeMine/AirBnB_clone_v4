@@ -4,6 +4,7 @@ Contains the FileStorage class
 """
 
 import json
+import models
 from models.amenity import Amenity
 from models.base_model import BaseModel
 from models.city import City
@@ -11,6 +12,7 @@ from models.place import Place
 from models.review import Review
 from models.state import State
 from models.user import User
+from hashlib import md5
 
 classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
            "Place": Place, "Review": Review, "State": State, "User": User}
@@ -44,7 +46,9 @@ class FileStorage:
         """serializes __objects to the JSON file (path: __file_path)"""
         json_objects = {}
         for key in self.__objects:
-            json_objects[key] = self.__objects[key].to_dict()
+            if key == "password":
+                json_objects[key].decode()
+            json_objects[key] = self.__objects[key].to_dict(save_fs=1)
         with open(self.__file_path, 'w') as f:
             json.dump(json_objects, f)
 
@@ -71,29 +75,30 @@ class FileStorage:
 
     def get(self, cls, id):
         """
-        This is a public method to retrieve one object
-
-        Args:
-            cls (class): the class where object is to be gotten
-            id (str): the id of the object to be gotten
-        Return:
-            object based on the class and id if found else return None
+        Returns the object based on the class name and its ID, or
+        None if not found
         """
-        if cls is None:
+        if cls not in classes.values():
             return None
-        result = list(filter(lambda x: type(x) is cls and x.id == id,
-                             self.__objects.values()))
-        if result:
-            return result[0]
+
+        all_cls = models.storage.all(cls)
+        for value in all_cls.values():
+            if (value.id == id):
+                return value
+
+        return None
 
     def count(self, cls=None):
         """
-        This is a public method that counts the number of objects in a storage
-        for a specified class
-        Args:
-            cls (class): class to check for number of objects
-        Return:
-            integer value of the number of objects if class is valid and exist
-            else the total number of objects in storage
+        count the number of objects in storage
         """
-        return len(self.all(cls))
+        all_class = classes.values()
+
+        if not cls:
+            count = 0
+            for clas in all_class:
+                count += len(models.storage.all(clas).values())
+        else:
+            count = len(models.storage.all(cls).values())
+
+        return count
