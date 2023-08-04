@@ -294,7 +294,7 @@ Bright Okon - [Github](brightiniabasi@gmail.com)
 ## Authors
 
 Dukeson Ehigboria - [Github](https://github.com/Sampul-CodeMine) / [Twitter](https://twitter.com/Sampul_CodeMine)  
-[Blessed Akhigbe](akhigbeblessed@gmail.com) - [GitHub]()
+[Blessed Akhigbe](akhigbeblessed@gmail.com) - [GitHub](https://github.com/Pharmakarios1)
 
 ## License
 
