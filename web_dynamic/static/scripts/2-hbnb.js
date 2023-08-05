@@ -11,7 +11,6 @@ $('document').ready(() => {
   });
   
   const url = 'http://localhost:5001/api/v1/status/';
-  alert(url);
   $.get(url, (data) => {
     if (data.status === 'OK') {
       $('header div#api_status').addClass('available');
